@@ -10,11 +10,10 @@ import java.util.UUID;
 
 public class CapeRegistry {
     private static final HashMap<UUID, ResourceLocation> CUSTOM_CAPE_MAP = new HashMap<>();
-    private static final ResourceLocation DEV_CAPE = new ResourceLocation(CapeJS.MOD_ID, locationString("dev_cape"));
+    private static final ResourceLocation DEV_CAPE = CapeJS.id(locationString("dev_cape"));
 
     public static void initialize() {
-        CapeJS.LOGGER.info("Registering custom capes for: " + CapeJS.MOD_ID);
-        addToCapeMap("8c641065-dba3-41f3-864f-edea4ddfc8bb", DEV_CAPE);
+        addCapeToMap("8c641065-dba3-41f3-864f-edea4ddfc8bb", DEV_CAPE);
         CapeJSEvents.ADD_CAPE.post(new AddCapeEventJS());
     }
 
@@ -27,16 +26,18 @@ public class CapeRegistry {
         if (type.equals("dev_cape")) {
             throw new IllegalArgumentException("dev_cape is reserved for mod author!");
         }
-        if (!ResourceLocation.isValidResourceLocation(textureLocation)) {
+
+        if (!ResourceLocation.isValidPath(textureLocation)) {
             throw new IllegalArgumentException(type + ".png is not found in " + CapeJS.MOD_ID + "/textures/capes/");
         }
-        return new ResourceLocation(CapeJS.MOD_ID, textureLocation);
+        return CapeJS.id(textureLocation);
     }
 
-    public static void addToCapeMap(String uuid, ResourceLocation identifier) {
-        CapeJS.LOGGER.info("Adding custom cape for: " + uuid + ", at: " + identifier);
+    public static void addCapeToMap(String uuid, ResourceLocation identifier) {
         if (!CUSTOM_CAPE_MAP.containsKey(UUID.fromString(uuid))) {
             CUSTOM_CAPE_MAP.put(UUID.fromString(uuid), identifier);
+        } else {
+            CapeJS.LOGGER.info("Attempted to add cape for existing UUID: {}", uuid);
         }
     }
 
