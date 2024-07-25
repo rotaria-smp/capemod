@@ -7,6 +7,7 @@
   "mixins": [
   ],
   "client": [
+    "client.AbstractClientPlayerNeoForgeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

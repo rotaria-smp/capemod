@@ -1,1 +1,1 @@
-package dev.thestaticvoid.capejs.kubejs.CapeJSPlugin
+dev.thestaticvoid.capejs.kubejs.CapeJSPlugin

@@ -42,11 +42,18 @@ public class CapeRegistry {
     }
 
     public static boolean mapContainsPlayer(AbstractClientPlayer player) {
-        return CUSTOM_CAPE_MAP.containsKey(player.getGameProfile().getId());
+        return mapContainsPlayer(player.getGameProfile().getId());
+    }
+
+    public static boolean mapContainsPlayer(UUID uuid) {
+        return CUSTOM_CAPE_MAP.containsKey(uuid);
     }
 
     public static ResourceLocation getResourceByPlayer(AbstractClientPlayer player) {
-        UUID uuid = player.getGameProfile().getId();
+        return getResourceByPlayer(player.getGameProfile().getId());
+    }
+
+    public static ResourceLocation getResourceByPlayer(UUID uuid) {
         if (CUSTOM_CAPE_MAP.containsKey(uuid)) {
             return CUSTOM_CAPE_MAP.get(uuid);
         }

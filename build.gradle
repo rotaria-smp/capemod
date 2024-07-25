@@ -154,7 +154,8 @@ tasks.withType(ProcessResources).configureEach {
             mod_version            : mod_version,
             mod_authors            : mod_authors,
             mod_description        : mod_description,
-            kubejs_version_range   : kubejs_version_range
+            kubejs_version_range   : kubejs_version_range,
+            mod_github_link        : mod_github_link
     ]
     inputs.properties replaceProperties
 
