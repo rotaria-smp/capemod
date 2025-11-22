@@ -1,3 +1,4 @@
+
 package dev.thestaticvoid.capejs.network;
 
 import io.netty.buffer.ByteBuf;
@@ -24,8 +25,8 @@ public final class NetworkHandler {
                     CapeData.TYPE,
                     CapeData.STREAM_CODEC,
                     new DirectionalPayloadHandler<>(
-                            ClientPayloadHandler::handleCape,  // client
-                            ServerPayloadHandler::handleCape   // server
+                            ClientPayloadHandler::handleCape,
+                            ServerPayloadHandler::handleCape
                     )
             );
 
@@ -33,7 +34,7 @@ public final class NetworkHandler {
         }
 
 
-    public record CapeData(String playerId, String capeId) implements CustomPacketPayload {
+    public record CapeData(String playerId, String capeId, Boolean remove) implements CustomPacketPayload {
 
         public static final Type<CapeData> TYPE =
                 new Type<>(
@@ -46,6 +47,9 @@ public final class NetworkHandler {
 
                 ByteBufCodecs.STRING_UTF8,
                 CapeData::capeId,
+
+                ByteBufCodecs.BOOL,
+                CapeData::remove,
 
                 CapeData::new
         );

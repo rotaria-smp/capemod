@@ -13,6 +13,7 @@ public final class CommandInit {
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
         CapeCommands.register(event.getDispatcher());
+        SwitchCape.register(event.getDispatcher());
         LOGGER.info("Registered server commands.");
     }
 }

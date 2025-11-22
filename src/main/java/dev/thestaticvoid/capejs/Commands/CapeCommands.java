@@ -21,7 +21,8 @@ public class CapeCommands {
                             var player = ctx.getSource().getPlayerOrException();
                             String capeId = StringArgumentType.getString(ctx, "cape");
                             System.out.println("Player " + player  + "UUID: " + player.getUUID() + " Was granted Cape: " + capeId);
-                            NetworkSender.sendCapePacket(player, capeId);
+                            boolean remove = false;
+                            NetworkSender.sendCapePacket(player, capeId, remove);
                             CapeManager.register(player.getUUID(), capeId);
                             ctx.getSource().sendSuccess(
                                     () -> Component.literal("Sent cape packet to " + player.getName().getString()),
@@ -30,5 +31,8 @@ public class CapeCommands {
 
                             return 1;
                         })
+
         )));
+
+
 }}
