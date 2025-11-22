@@ -1,4 +1,3 @@
-
 package dev.thestaticvoid.capejs.network;
 
 import io.netty.buffer.ByteBuf;
@@ -13,25 +12,26 @@ import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import static dev.thestaticvoid.capejs.CapeJS.MOD_ID;
+
 @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public final class NetworkHandler {
 
-        @SubscribeEvent
-        public static void register(RegisterPayloadHandlersEvent event) {
+    @SubscribeEvent
+    public static void register(RegisterPayloadHandlersEvent event) {
 
-            PayloadRegistrar registrar = event.registrar("1");
+        PayloadRegistrar registrar = event.registrar("1");
 
-            registrar.playBidirectional(
-                    CapeData.TYPE,
-                    CapeData.STREAM_CODEC,
-                    new DirectionalPayloadHandler<>(
-                            ClientPayloadHandler::handleCape,
-                            ServerPayloadHandler::handleCape
-                    )
-            );
+        registrar.playBidirectional(
+                CapeData.TYPE,
+                CapeData.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        ClientPayloadHandler::handleCape,
+                        ServerPayloadHandler::handleCape
+                )
+        );
 
-            System.out.println("REGISTERED PACKET: " + CapeData.TYPE.id());
-        }
+        System.out.println("REGISTERED PACKET: " + CapeData.TYPE.id());
+    }
 
 
     public record CapeData(String playerId, String capeId, Boolean remove) implements CustomPacketPayload {
