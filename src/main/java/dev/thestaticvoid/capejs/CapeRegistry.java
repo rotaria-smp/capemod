@@ -4,10 +4,13 @@ import dev.thestaticvoid.capejs.kubejs.AddCapeEventJS;
 import dev.thestaticvoid.capejs.kubejs.CapeJSEvents;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
 
+import static net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
 public class CapeRegistry {
     private static final HashMap<UUID, ResourceLocation> CUSTOM_CAPE_MAP = new HashMap<>();
     private static final ResourceLocation DEV_CAPE = CapeJS.id(locationString("dev_cape"));
@@ -17,7 +20,7 @@ public class CapeRegistry {
         CapeJSEvents.ADD_CAPE.post(new AddCapeEventJS());
     }
 
-    private static String locationString(String type) {
+    public static String locationString(String type) {
         return ("textures/capes/" + type + ".png");
     }
 

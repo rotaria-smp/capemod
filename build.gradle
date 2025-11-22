@@ -26,6 +26,12 @@ repositories {
         }
     }
 
+    maven {
+        url "https://maven.latvian.dev/releases"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }
     mavenLocal()
 }
 
