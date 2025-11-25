@@ -1,6 +1,5 @@
 package dev.thestaticvoid.capejs.Commands;
 
-import dev.thestaticvoid.capejs.Commands.CapeCommands;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -11,7 +10,9 @@ public final class CommandInit {
 
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
-        CapeCommands.register(event.getDispatcher());
+        GiveCape.register(event.getDispatcher());
         SwitchCape.register(event.getDispatcher());
+        UnEquipCape.register(event.getDispatcher());
+        RemoveCape.register(event.getDispatcher());
     }
 }

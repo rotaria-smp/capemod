@@ -6,45 +6,60 @@ import dev.thestaticvoid.capejs.core.CapeManager;
 import dev.thestaticvoid.capejs.network.NetworkSender;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 public class SwitchCape {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 
         dispatcher.register(
-                Commands.literal("switchcape")
-                        .requires(cs -> cs.hasPermission(2))
+                Commands.literal("equipcape")
+                        .requires(cs -> cs.hasPermission(0))
                         .then(
                                 Commands.argument("cape", StringArgumentType.string())
                                         .executes(ctx -> {
 
-                                            var player = ctx.getSource().getPlayerOrException();
+                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
                                             String capeId = StringArgumentType.getString(ctx, "cape");
 
                                             System.out.println(
                                                     "Player " + player.getName().getString() +
                                                             " UUID: " + player.getUUID() +
-                                                            " requested cape: " + capeId
+                                                            " equipped cape: " + capeId
                                             );
 
-                                            // First: remove cape
+                                            // ----- CHECK UNLOCK FROM PERSISTENT NBT -----
+                                            ListTag list = player.getPersistentData()
+                                                    .getList("cape_unlocks", Tag.TAG_STRING);
+
+                                            boolean unlocked = list.stream()
+                                                    .anyMatch(tag -> tag.getAsString().equals(capeId));
+
+                                            if (!unlocked) {
+                                                ctx.getSource().sendFailure(
+                                                        Component.literal("You have not unlocked cape: " + capeId)
+                                                );
+                                                return 0;
+                                            }
+                                            // ---------------------------------------------
+
+                                            // Remove current cape
                                             NetworkSender.sendCapePacket(player, capeId, true);
-                                            // Register removal (if your system uses the same method)
                                             CapeManager.unregister(player.getUUID());
 
-                                            ctx.getSource().sendSuccess(
-                                                    () -> Component.literal("Removed current cape from " + player.getName().getString()),
-                                                    false
-                                            );
+                                            System.out.println("Removed current cape from " + player.getName().getString());
 
-                                            // Second: add cape
+                                            // Apply new cape
                                             NetworkSender.sendCapePacket(player, capeId, false);
-
                                             CapeManager.register(player.getUUID(), capeId);
-
+                                            player.getPersistentData().putString("current_cape", capeId);
                                             ctx.getSource().sendSuccess(
-                                                    () -> Component.literal("Applied cape " + capeId + " to " + player.getName().getString()),
+                                                    () -> Component.literal("Equiped cape " + capeId),
                                                     false
                                             );
 
