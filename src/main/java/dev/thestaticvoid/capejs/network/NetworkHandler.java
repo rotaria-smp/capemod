@@ -13,7 +13,6 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import static dev.thestaticvoid.capejs.CapeJS.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public final class NetworkHandler {
 
     @SubscribeEvent

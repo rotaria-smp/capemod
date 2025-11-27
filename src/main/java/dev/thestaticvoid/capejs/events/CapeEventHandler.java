@@ -15,12 +15,15 @@ public class CapeEventHandler {
         String currentCape = player.getPersistentData().getString("current_cape");
 
         if (!currentCape.isEmpty()) {
+                player.getPersistentData().remove("current_cape");
+
             NetworkSender.sendCapePacket(player, currentCape, false);
             CapeManager.register(player.getUUID(), currentCape);
         }
     }
+
     @SubscribeEvent
-    public void onPlayerRespawn(PlayerEvent.PlayerLoggedInEvent event) {
+    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
         }

@@ -21,13 +21,16 @@ public class CapeJS {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
-    @SubscribeEvent
-    public void registerPayloads(RegisterPayloadHandlersEvent event) {
-        NetworkHandler.register(event);
-    }
-    public CapeJS(IEventBus modEventBus, ModContainer modContainer) {
-        CapeRegistry.initialize();
+    public CapeJS(IEventBus modEventBus, ModContainer container) {
+
+        // Register packet handlers on mod bus ONLY
+        modEventBus.addListener(this::registerPayloads);
+
+        // Register event handlers
         NeoForge.EVENT_BUS.register(new CapeEventHandler());
-        LOGGER.info("CapeJS initialized.");
+    }
+
+    private void registerPayloads(RegisterPayloadHandlersEvent event) {
+        NetworkHandler.register(event);
     }
 }
