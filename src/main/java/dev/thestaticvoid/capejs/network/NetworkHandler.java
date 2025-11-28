@@ -11,6 +11,8 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+import java.util.Map;
+
 import static dev.thestaticvoid.capejs.CapeJS.MOD_ID;
 
 public final class NetworkHandler {
@@ -28,8 +30,35 @@ public final class NetworkHandler {
                         ServerPayloadHandler::handleCape
                 )
         );
-
         System.out.println("REGISTERED PACKET: " + CapeData.TYPE.id());
+
+        registrar.playToClient(
+                CapeManifestData.TYPE,
+                CapeManifestData.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        ClientManifestPayloadHandler::handle,
+                        (payload, ctx) -> {}
+                )
+        );
+
+        registrar.playBidirectional(
+                RequestCapeDownload.TYPE,
+                RequestCapeDownload.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        (payload, ctx) -> {},
+                        ServerTextureRequestHandler::handle
+                )
+        );
+
+        registrar.playToClient(
+                CapeTextureData.TYPE,
+                CapeTextureData.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        ClientTexturePayloadHandler::handleTexture,
+                        (payload, ctx) -> {}
+                )
+        );
+
     }
 
 
