@@ -2,16 +2,13 @@ package dev.thestaticvoid.capejs.Commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import dev.thestaticvoid.capejs.core.CapeManager;
 import dev.thestaticvoid.capejs.network.NetworkSender;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 
 public class SwitchCape {
 
@@ -27,13 +24,7 @@ public class SwitchCape {
                                             ServerPlayer player = ctx.getSource().getPlayerOrException();
                                             String capeId = StringArgumentType.getString(ctx, "cape");
 
-                                            System.out.println(
-                                                    "Player " + player.getName().getString() +
-                                                            " UUID: " + player.getUUID() +
-                                                            " equipped cape: " + capeId
-                                            );
-
-                                            // ----- CHECK UNLOCK FROM PERSISTENT NBT -----
+                                            // Check if cape is unlocked
                                             ListTag list = player.getPersistentData()
                                                     .getList("cape_unlocks", Tag.TAG_STRING);
 
@@ -46,20 +37,23 @@ public class SwitchCape {
                                                 );
                                                 return 0;
                                             }
-                                            // ---------------------------------------------
 
-                                            // Remove current cape
-                                            NetworkSender.sendCapePacket(player, capeId, true);
-                                            CapeManager.unregister(player.getUUID());
+                                            // Get current cape to see if we need to remove it first
+                                            String oldCape = player.getPersistentData().getString("current_cape");
 
-                                            System.out.println("Removed current cape from " + player.getName().getString());
+                                            // If they're already wearing a different cape, remove it first
+                                            if (!oldCape.isEmpty() && !oldCape.equals(capeId)) {
+                                                NetworkSender.sendCapePacket(player, oldCape, true);
+                                            }
 
                                             // Apply new cape
                                             NetworkSender.sendCapePacket(player, capeId, false);
-                                            CapeManager.register(player.getUUID(), capeId);
+
+                                            // Save to persistent data
                                             player.getPersistentData().putString("current_cape", capeId);
+
                                             ctx.getSource().sendSuccess(
-                                                    () -> Component.literal("Equiped cape " + capeId),
+                                                    () -> Component.literal("Equipped cape " + capeId),
                                                     false
                                             );
 
