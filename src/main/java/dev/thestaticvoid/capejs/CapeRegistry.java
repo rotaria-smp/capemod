@@ -4,13 +4,10 @@ import dev.thestaticvoid.capejs.kubejs.AddCapeEventJS;
 import dev.thestaticvoid.capejs.kubejs.CapeJSEvents;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-import static net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
 public class CapeRegistry {
     private static final HashMap<UUID, ResourceLocation> CUSTOM_CAPE_MAP = new HashMap<>();
     private static final ResourceLocation DEV_CAPE = CapeJS.id(locationString("dev_cape"));
@@ -36,11 +33,32 @@ public class CapeRegistry {
         return CapeJS.id(textureLocation);
     }
 
-    public static void addCapeToMap(String uuid, ResourceLocation identifier) {
-        if (!CUSTOM_CAPE_MAP.containsKey(UUID.fromString(uuid))) {
-            CUSTOM_CAPE_MAP.put(UUID.fromString(uuid), identifier);
+    public static void addCapeToMap(String uuidString, ResourceLocation identifier) {
+        UUID uuid = UUID.fromString(uuidString);
+        if (!CUSTOM_CAPE_MAP.containsKey(uuid)) {
+            CUSTOM_CAPE_MAP.put(uuid, identifier);
         } else {
-            CapeJS.LOGGER.info("Attempted to add cape for existing UUID: {}", uuid);
+            CapeJS.LOGGER.info("Attempted to add cape for existing UUID: {}", uuidString);
+        }
+    }
+
+    public static void removeCapeToMap(String uuidString, ResourceLocation identifier) {
+        UUID uuid = UUID.fromString(uuidString);
+        if (CUSTOM_CAPE_MAP.containsKey(uuid)) {
+            CUSTOM_CAPE_MAP.remove(uuid);
+            CapeJS.LOGGER.info("Removed cape for UUID: {}", uuidString);
+        } else {
+            CapeJS.LOGGER.info("Attempted to remove cape for non-existent UUID: {}", uuidString);
+        }
+    }
+
+    public static void removeCapeFromMap(String uuidString) {
+        UUID uuid = UUID.fromString(uuidString);
+        if (CUSTOM_CAPE_MAP.containsKey(uuid)) {
+            CUSTOM_CAPE_MAP.remove(uuid);
+            CapeJS.LOGGER.info("Removed cape for UUID: {}", uuidString);
+        } else {
+            CapeJS.LOGGER.info("Attempted to remove cape for non-existent UUID: {}", uuidString);
         }
     }
 
@@ -57,9 +75,6 @@ public class CapeRegistry {
     }
 
     public static ResourceLocation getResourceByPlayer(UUID uuid) {
-        if (CUSTOM_CAPE_MAP.containsKey(uuid)) {
-            return CUSTOM_CAPE_MAP.get(uuid);
-        }
-        return null;
+        return CUSTOM_CAPE_MAP.get(uuid); // returns null if missing
     }
 }

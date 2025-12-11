@@ -11,29 +11,58 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+import java.util.Map;
+
 import static dev.thestaticvoid.capejs.CapeJS.MOD_ID;
-@EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+
 public final class NetworkHandler {
 
-        @SubscribeEvent
-        public static void register(RegisterPayloadHandlersEvent event) {
+    @SubscribeEvent
+    public static void register(RegisterPayloadHandlersEvent event) {
 
-            PayloadRegistrar registrar = event.registrar("1");
+        PayloadRegistrar registrar = event.registrar("1");
 
-            registrar.playBidirectional(
-                    CapeData.TYPE,
-                    CapeData.STREAM_CODEC,
-                    new DirectionalPayloadHandler<>(
-                            ClientPayloadHandler::handleCape,  // client
-                            ServerPayloadHandler::handleCape   // server
-                    )
-            );
+        registrar.playBidirectional(
+                CapeData.TYPE,
+                CapeData.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        ClientPayloadHandler::handleCape,
+                        ServerPayloadHandler::handleCape
+                )
+        );
+        System.out.println("REGISTERED PACKET: " + CapeData.TYPE.id());
 
-            System.out.println("REGISTERED PACKET: " + CapeData.TYPE.id());
-        }
+        registrar.playToClient(
+                CapeManifestData.TYPE,
+                CapeManifestData.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        ClientManifestPayloadHandler::handle,
+                        (payload, ctx) -> {}
+                )
+        );
+
+        registrar.playBidirectional(
+                RequestCapeDownload.TYPE,
+                RequestCapeDownload.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        (payload, ctx) -> {},
+                        ServerTextureRequestHandler::handle
+                )
+        );
+
+        registrar.playToClient(
+                CapeTextureData.TYPE,
+                CapeTextureData.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        ClientTexturePayloadHandler::handleTexture,
+                        (payload, ctx) -> {}
+                )
+        );
+
+    }
 
 
-    public record CapeData(String playerId, String capeId) implements CustomPacketPayload {
+    public record CapeData(String playerId, String capeId, Boolean remove) implements CustomPacketPayload {
 
         public static final Type<CapeData> TYPE =
                 new Type<>(
@@ -46,6 +75,9 @@ public final class NetworkHandler {
 
                 ByteBufCodecs.STRING_UTF8,
                 CapeData::capeId,
+
+                ByteBufCodecs.BOOL,
+                CapeData::remove,
 
                 CapeData::new
         );
