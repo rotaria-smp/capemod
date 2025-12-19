@@ -14,5 +14,9 @@ public final class CommandInit {
         SwitchCape.register(event.getDispatcher());
         UnEquipCape.register(event.getDispatcher());
         RemoveCape.register(event.getDispatcher());
+        DebugCapeCommand.register(event.getDispatcher());
+        FixCapeCommand.register(event.getDispatcher());
+        BackupCapeCommand.register(event.getDispatcher());
+        OpenCapeGUI.register(event.getDispatcher());
     }
 }

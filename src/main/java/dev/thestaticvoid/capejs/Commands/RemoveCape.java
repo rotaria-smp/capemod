@@ -54,11 +54,23 @@ public class RemoveCape {
                                             // Save back into player NBT
                                             player.getPersistentData().put("cape_unlocks", newList);
 
+                                            // Send lock packet to client
+                                            dev.thestaticvoid.capejs.network.NetworkHandler.CapeLockPayload lockPayload =
+                                                    new dev.thestaticvoid.capejs.network.NetworkHandler.CapeLockPayload(capeId);
+                                            player.connection.send(lockPayload);
+                                            System.out.println("[CAPE CMD] Sent lock packet to client for: " + capeId);
+
                                             String currentCape = player.getPersistentData().getString("current_cape");
                                             if (currentCape.equals(capeId)) {
                                                 NetworkSender.sendCapePacket(player, capeId, true);
                                                 CapeManager.unregister(player.getUUID());
                                                 player.getPersistentData().putString("current_cape", "");
+
+                                                // Send unequip to client storage
+                                                dev.thestaticvoid.capejs.network.NetworkHandler.CapeEquipPayload equipPayload =
+                                                        new dev.thestaticvoid.capejs.network.NetworkHandler.CapeEquipPayload("");
+                                                player.connection.send(equipPayload);
+
                                                 System.out.println("Also unequipped currently worn cape");
                                             }
 

@@ -34,19 +34,25 @@ public class GiveCape {
                                                             " was granted cape: " + capeId
                                             );
 
-                                            // Apply cape packet - Replaced with equip cape
-                                            // NetworkSender.sendCapePacket(player, capeId, false);
-                                            // CapeManager.register(player.getUUID(), capeId);
-
                                             // ----- PERSISTENT NBT UNLOCK LOGIC -----
                                             var nbt = player.getPersistentData();
                                             ListTag list = nbt.getList("cape_unlocks", Tag.TAG_STRING);
 
+                                            boolean wasNew = false;
                                             if (!list.contains(StringTag.valueOf(capeId))) {
                                                 list.add(StringTag.valueOf(capeId));
                                                 nbt.put("cape_unlocks", list);
+                                                wasNew = true;
                                             }
                                             // -----------------------------------------
+
+                                            // Send unlock packet to client
+                                            if (wasNew) {
+                                                dev.thestaticvoid.capejs.network.NetworkHandler.CapeUnlockPayload unlockPayload =
+                                                        new dev.thestaticvoid.capejs.network.NetworkHandler.CapeUnlockPayload(capeId);
+                                                player.connection.send(unlockPayload);
+                                                System.out.println("[CAPE CMD] Sent unlock packet to client for: " + capeId);
+                                            }
 
                                             ctx.getSource().sendSuccess(
                                                     () -> Component.literal("Cape " + capeId + " unlocked for " + player.getName().getString()),

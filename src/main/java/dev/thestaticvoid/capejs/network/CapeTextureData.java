@@ -9,8 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 public record CapeTextureData(String capeId, byte[] data) implements CustomPacketPayload {
 
     public static final Type<CapeTextureData> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath("capejs", "cape_texture")
-            );
+            new Type<>(ResourceLocation.fromNamespaceAndPath("capejs", "cape_texture"));
 
     public static final StreamCodec<ByteBuf, CapeTextureData> STREAM_CODEC =
             StreamCodec.composite(
