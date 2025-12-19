@@ -51,6 +51,11 @@ public class UnEquipCape {
                                             NetworkSender.sendCapePacket(player, capeId, true);
                                             player.getPersistentData().putString("current_cape", "");
 
+                                            // Send unequip to client storage
+                                            dev.thestaticvoid.capejs.network.NetworkHandler.CapeEquipPayload equipPayload =
+                                                    new dev.thestaticvoid.capejs.network.NetworkHandler.CapeEquipPayload("");
+                                            player.connection.send(equipPayload);
+
                                             ctx.getSource().sendSuccess(
                                                     () -> Component.literal("Unequipped cape " + capeId),
                                                     false

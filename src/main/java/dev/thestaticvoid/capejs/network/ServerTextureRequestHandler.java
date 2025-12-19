@@ -9,8 +9,6 @@ import java.nio.file.Paths;
 
 public final class ServerTextureRequestHandler {
 
-    private ServerTextureRequestHandler() {}
-
     public static void handle(RequestCapeDownload req, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) ctx.player();
@@ -21,9 +19,7 @@ public final class ServerTextureRequestHandler {
 
             try {
                 byte[] bytes = Files.readAllBytes(file);
-                player.connection.send(
-                        new CapeTextureData(req.capeId(), bytes)
-                );
+                player.connection.send(new CapeTextureData(req.capeId(), bytes));
             } catch (Exception ignored) {}
         });
     }

@@ -52,6 +52,11 @@ public class SwitchCape {
                                             // Save to persistent data
                                             player.getPersistentData().putString("current_cape", capeId);
 
+                                            // Send equip packet to client storage
+                                            dev.thestaticvoid.capejs.network.NetworkHandler.CapeEquipPayload equipPayload =
+                                                    new dev.thestaticvoid.capejs.network.NetworkHandler.CapeEquipPayload(capeId);
+                                            player.connection.send(equipPayload);
+
                                             ctx.getSource().sendSuccess(
                                                     () -> Component.literal("Equipped cape " + capeId),
                                                     false

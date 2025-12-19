@@ -4,6 +4,8 @@ import dev.thestaticvoid.capejs.core.CapeManager;
 import dev.thestaticvoid.capejs.network.CapeManifestData;
 import dev.thestaticvoid.capejs.network.NetworkHandler;
 import dev.thestaticvoid.capejs.network.NetworkSender;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -13,9 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
-import java.util.Base64;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,6 +28,19 @@ public class CapeEventHandler {
         // Send the cape manifest to the joining player
         CapeManifestData manifest = new CapeManifestData(buildCapeManifest());
         player.connection.send(manifest);
+
+        // NEW: Send full cape list sync to client
+        ListTag capeList = player.getPersistentData().getList("cape_unlocks", Tag.TAG_STRING);
+        List<String> unlockedCapes = new ArrayList<>();
+        for (Tag tag : capeList) {
+            unlockedCapes.add(tag.getAsString());
+        }
+        String equippedCape = player.getPersistentData().getString("current_cape");
+
+        NetworkHandler.CapeListSyncPayload syncPayload =
+                new NetworkHandler.CapeListSyncPayload(unlockedCapes, equippedCape);
+        player.connection.send(syncPayload);
+        System.out.println("[CAPE LOGIN] Synced " + unlockedCapes.size() + " capes to " + player.getName().getString());
 
         // Restore the joining player's own cape if they had one
         String currentCape = player.getPersistentData().getString("current_cape");

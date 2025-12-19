@@ -1,13 +1,14 @@
 package dev.thestaticvoid.capejs.core;
 
-import java.io.File;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
+/**
+ * Central registry for active capes
+ * Used on both server and client
+ */
 public final class CapeManager {
     private static final Map<UUID, String> CAPES = new ConcurrentHashMap<>();
     private static volatile BiConsumer<UUID, String> UPDATE_LISTENER = (u, c) -> {};
@@ -15,11 +16,10 @@ public final class CapeManager {
     private CapeManager() {}
 
     public static void register(UUID uuid, String capeId) {
-        if (capeId == null) {
+        if (capeId == null || capeId.isEmpty()) {
             CAPES.remove(uuid);
         } else {
             CAPES.put(uuid, capeId);
-            System.out.println("Capes PUT ");
         }
         UPDATE_LISTENER.accept(uuid, capeId);
     }
@@ -40,5 +40,4 @@ public final class CapeManager {
     public static void setUpdateListener(BiConsumer<UUID, String> listener) {
         UPDATE_LISTENER = listener != null ? listener : (u, c) -> {};
     }
-
 }
